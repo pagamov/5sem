@@ -1,2 +1,2 @@
 
-main : src/main.py ; python src/main.py 
+main : src/sketch.js src/*.js ; open -a Safari src/index.html

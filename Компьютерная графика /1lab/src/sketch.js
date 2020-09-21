@@ -1,47 +1,85 @@
 'use strict'
 new p5();
 //sizes of window
-var wight = 1000, hight = wight * 2 / 3;
-//
-var fat = 25, dotArr = [], dotsize = 0, linesArr = [];
-//buttons arr
-var bdot = [], bline = [], bor = [], bres = [], bsave = [];
-//
-var pivetXY = [];
-//matrix
-var smegMatrix, nMatrix, oneMatrix, gamPath, drawGamPathPass = 0;
-//
-var number2letter = new Array(26);
-//var selected button
-var bstatus = null, bstatusColor = null, bstatusR = "OR", dmoveindex = -1, dataDotArr;
+let WIDTH = 600, HEIGHT = WIDTH;
+
+var funk = function(p) {
+	let a = document.getElementById("a_global").value
+	return a * cos(3*p*2*PI/360);
+}
+
+function count_funk_polar (f, p_min = 0, p_max = 1000, step = 1) {
+	var res = []
+	for (var i = p_min; i < p_max; i += step) {
+		res.push({fi: i, ro: f(i)})
+	}
+	return res;
+}
+
+function count_funk_decard (f, p_min = 0, p_max = 1000, step = 1) {
+	var res = []
+	for (var i = p_min; i < p_max; i += step) {
+		res.push({x: i, y: f(i)})
+	}
+	return res;
+}
+
+function polar_to_decard (coords) { // {fi: value, ro: value}
+	var x = cos (coords.fi * 2 * PI / 360) * coords.ro
+	var y = sin (coords.fi * 2 * PI / 360) * coords.ro
+	return {x: x, y: y};
+}
+
+function shift (coords, shift_x, shift_y) {
+	// (num, num, {})
+	var x = coords.x + (shift_x || document.getElementById("x_shift_global").value)
+	var y = coords.y + (shift_y || document.getElementById("y_shift_global").value)
+	return {x: x, y: y}
+}
+
+function multiply (coords, multiplier_x, multiplier_y) {
+	var x = coords.x * (multiplier_x || document.getElementById("x_multiply_global").value)
+	var y = coords.y * (multiplier_y || document.getElementById("y_multiply_global").value)
+	return {x: x, y: y}
+}
+
+function drawLine (coords_1, coords_2) {
+	var sh = WIDTH / 2
+	let start = shift(coords_1, sh, sh)
+	let end = shift(coords_2, sh, sh)
+	stroke(10);
+	line(start.x, start.y, end.x, end.y);
+}
+
+// document.getElementById("param_input_button").onclick = function() {
+// 	document.getElementById("progres_div").style.visibility = 'visible'
+// }
 
 function setup () {
-	createCanvas(wight, hight);
+	createCanvas(WIDTH, HEIGHT);
 	background(220);
-	var start = wight * 2 / 3;
-	var h1 = 8; //10
-	var h2 = 40; //50
-	var d1 = 58; //68
-	var d2 = 50; //60
-	number2letter = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-	bdot.push(new Button(start + h1, h2, 2*d1+h1, d2, "Dot mode"));
-	bdot.push(new Button(start + 3*h1 + 2*d1, h2, d1, d2, "Dot dell"));
-	bdot.push(new Button(start + 4*h1 + 3*d1, h2, d1, d2, "Dot move"));
-	bline.push(new Button(start + h1, 2*h2+d2, 2*d1 + h1, d2, "Line mode"));
-	bline.push(new Button(start + 3*h1 + 2*d1, 2*h2+d2, d1, d2, "Line dell"));
-	bres.push(new Button(start + h1, 3*h2+2*d2, 2* d1 + h1, d2, "Res"));
-	bres.push(new Button(start + 3*h1 + 2*d1, 3*h2+2*d2, 2* d1 + h1, d2, "RePos"));
-	bor.push(new Button(start + 4*h1 + 3*d1, 2*h2+d2, d1, d2, "OR"));
-	bor.push(new Button(start + 5*h1 + 4*d1, 2*h2+d2, d1, d2, "nOR"));
-	bsave.push(new Button(start + h1, hight - d2 - h2, d1, d2, "Save"));
 }
 
 function draw () {
 	background(220);
-	lineShow();
-	for (var i = 0; i < dotsize; i++)	dotArr[i].show(i);
-	if (nodesRePosPass != 0)	nodesRePos();
-	if (drawGamPathPass) drawGamPath();
-	whenPressed();
-	bshow();
+	var arr = count_funk_polar(funk, 0, 360, 10)
+	var cords = []
+
+	for (var i = 0; i < arr.length; i++) {
+		// cords.push(
+		// 	shift(
+		// 		multiply(
+		// 			polar_to_decard(arr[i])
+		// 		)
+		// 	)
+		// )
+
+		cords.push(
+			polar_to_decard(arr[i])
+		)
+	}
+
+	for (var i = 1; i < cords.length; i++) {
+		drawLine(cords[i - 1], cords[i]);
+	}
 }
