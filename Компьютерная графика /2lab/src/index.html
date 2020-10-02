@@ -7,20 +7,18 @@
         </style>
     </head>
     <body>
-        <div>
-            <!-- <input id="param_input" type="number" min="0"></input> -->
-            <!-- <button id="param_input_button">draw</button> <br> -->
-            <div>
-                <input id="a_global" type="range" min="-100" max="100" step="1" value="50">
-            </div>
-            <div class="visualy_hidden" id="progres_div">
+        <!-- <input id="param_input" type="number" min="0"></input> -->
+        <!-- <button id="param_input_button">draw</button> <br> -->
 
-            </div>
-        </div>
         <div>
+            <input id="n_number_of_sides" type="range" min="3" max="6" step="1" value="3">
+            n - number of sides <br>
+        </div>
+
+        <!-- <div>
             <input type="file" id="selectFiles" value="Import" />
             <button id="import">Import</button> <br>
-        </div>
+        </div> -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.js"></script>
         <script src="sketch.js"></script>
         <!-- <script src="actions.js"></script>

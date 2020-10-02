@@ -3,6 +3,40 @@ new p5();
 //sizes of window
 let WIDTH = 600, HEIGHT = WIDTH;
 
+function draw_coord_lines () {
+	stroke(10);
+	textSize(10);
+
+
+	var sh = WIDTH / 2
+
+	line(sh, sh, sh, 0); // up
+	line(sh, sh, WIDTH, sh); // left
+	line(sh, sh, 0, sh);
+	line(sh, sh, sh, HEIGHT);
+
+	var step = 50
+
+	for (var i = sh + step; i < WIDTH; i += step) {
+		text(String(i - sh), i, sh);
+	}
+
+	for (var i = 0 + step; i < sh; i += step) {
+		text(String(i), sh, sh - i);
+	}
+
+	line(WIDTH, sh, WIDTH - 10, sh + 10)
+	line(WIDTH, sh, WIDTH - 10, sh - 10)
+
+	text('x', WIDTH - 10, sh + 20)
+
+	line(sh, 0, sh + 10, 10)
+	line(sh, 0, sh - 10, 10)
+
+	text('y', sh + 20, 10)
+
+}
+
 var funk = function(p) {
 	let a = document.getElementById("a_global").value
 	return a * cos(3*p*2*PI/360);
@@ -51,33 +85,29 @@ function drawLine (coords_1, coords_2) {
 	line(start.x, start.y, end.x, end.y);
 }
 
-// document.getElementById("param_input_button").onclick = function() {
-// 	document.getElementById("progres_div").style.visibility = 'visible'
-// }
-
 function setup () {
 	createCanvas(WIDTH, HEIGHT);
 	background(220);
 }
 
 function draw () {
+
+
 	background(220);
-	var arr = count_funk_polar(funk, 0, 360, 10)
+
+	textSize(10);
+
+
+	var arr = count_funk_polar(funk, 0, 360, 1)
 	var cords = []
 
 	for (var i = 0; i < arr.length; i++) {
-		// cords.push(
-		// 	shift(
-		// 		multiply(
-		// 			polar_to_decard(arr[i])
-		// 		)
-		// 	)
-		// )
-
 		cords.push(
 			polar_to_decard(arr[i])
 		)
 	}
+
+	draw_coord_lines()
 
 	for (var i = 1; i < cords.length; i++) {
 		drawLine(cords[i - 1], cords[i]);
