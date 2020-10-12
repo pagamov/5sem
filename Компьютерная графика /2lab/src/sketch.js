@@ -36,22 +36,6 @@ function drawPiramid (h, R, x, y, z) {
 	endShape(CLOSE);
 }
 
-function keyPressed() {
-	if (keyCode === RIGHT_ARROW) {
-		camera_x += 10
-		console.log('pressed right')
-	} else if (keyCode === LEFT_ARROW) {
-		camera_x -= 10
-		console.log('pressed left')
-	} else if (keyCode === UP_ARROW) {
-		camera_y += 10
-		console.log('pressed up')
-	} else if (keyCode === DOWN_ARROW) {
-		camera_y -= 10
-		console.log('pressed down')
-	}
-}
-
 
 function setup() {
 	createCanvas(WIDTH, HEIGHT, WEBGL);
@@ -61,12 +45,10 @@ function setup() {
 
 function draw() {
 	background(200);
-
-	directionalLight(250, 250, 250, 0, 0, 0);
-	// ambientLight(255);
-	ambientMaterial(250);
+	ambientLight(128, 128, 128);
+	directionalLight(128, 128, 128, 100, -100, 0);
+	ambientMaterial(255);
 	orbitControl();
-
 	push();
 	drawPiramid(200, 100, 0, -20, 0);
 	pop();

@@ -91,13 +91,8 @@ function setup () {
 }
 
 function draw () {
-
-
 	background(220);
-
 	textSize(10);
-
-
 	var arr = count_funk_polar(funk, 0, 360, 1)
 	var cords = []
 
@@ -106,9 +101,7 @@ function draw () {
 			polar_to_decard(arr[i])
 		)
 	}
-
 	draw_coord_lines()
-
 	for (var i = 1; i < cords.length; i++) {
 		drawLine(cords[i - 1], cords[i]);
 	}
