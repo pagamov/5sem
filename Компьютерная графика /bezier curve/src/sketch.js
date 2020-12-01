@@ -33,7 +33,7 @@ function mousePressed() {
         }
     }
     if (active_mode == 'draw') {
-        control_points.push({x: mouseX, y: mouseY, curve_point_back: null, curve_point_front: null});    
+        control_points.push({x: mouseX, y: mouseY, curve_point_back: null, curve_point_front: null});
     }
 }
 
@@ -60,6 +60,8 @@ function setup() {
 	createCanvas(1000, 600);
 	background(200);
 }
+
+var bbb = [31, 90,16,97,80,28,61,66,60,15,88,41,79];
 
 function draw() {
 	background(200);
