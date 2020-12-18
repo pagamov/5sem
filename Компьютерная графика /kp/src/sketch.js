@@ -1,7 +1,8 @@
 let control_points = [];
 let make_new_point = false;
 let active_point = null;
-let active_mode = 'draw'
+let cameraMode = null;
+let active_mode = null;
 
 function keyTyped() {
     if (key === 'd') {
@@ -10,6 +11,17 @@ function keyTyped() {
         active_mode = 'remove';
     } else if (key === 'm') {
         active_mode = 'move';
+    }
+
+    if (key === 'x') {
+        cameraMode = 'x';
+    } else if (key === 'y') {
+        cameraMode = 'y';
+    } else if (key === 'z') {
+        cameraMode = 'z';
+    } else if (key === 'n') {
+        cameraMode = null;
+        active_mode = null;
     }
 }
 
@@ -56,19 +68,61 @@ function mouseReleased() {
     }
 }
 
-function setup() {
-	createCanvas(1000, 600);
-	background(200);
+function drawOval(x, y, z) {
+    stroke(210,120,10);
+    for (var i = 0; i < 360; i++) {
+        var x_1 = x + cos(i / 360 * 2 * PI) * document.getElementById('a').value;
+        var y_1 = y + sin(i / 360 * 2 * PI) * document.getElementById('b').value;
+
+        var x_2 = x + cos((i + 1) / 360 * 2 * PI) * document.getElementById('a').value;
+        var y_2 = y + sin((i + 1) / 360 * 2 * PI) * document.getElementById('b').value;
+
+        line(x_1, y_1, z, x_2, y_2, z);
+    }
 }
 
-var bbb = [31, 90,16,97,80,28,61,66,60,15,88,41,79];
+function drawCoords() {
+    var x = -width / 2;
+    var y = -height / 2;
+    stroke(200,0,0);
+    line(-x,0,0,100,0,0);
+
+    stroke(0,200,0);
+    line(-x,0,0,0,100,0);
+
+    stroke(0,0,200);
+    line(-x,0,0,0,0,100);
+}
+
+
+function setup() {
+	createCanvas(600, 600, WEBGL);
+	background(204);
+}
 
 function draw() {
-	background(200);
+	background(204);
+    if (cameraMode == 'x') {
+        camera(400, 0, 0, 0, 0, 0, 0, 1, 0);
+    } else if (cameraMode == 'y') {
+        camera(0, 100, 0, 0, 0, 0, 0, 1, 0);
+    } else if (cameraMode == 'z') {
+        camera(0, 0, 100, 0, 0, 0, 0, 1, 0);
+    } else {
+        orbitControl();
+    }
+    // if (active_mode == null) {
+    //     orbitControl();
+    // }
+
     draw_control_points();
-    draw_text();
+    //
+    // drawOval(0,0,0);
+
+    // draw_text();
     if (mouseIsPressed && make_new_point) {
         draw_based_points(active_point);
     }
     draw_bezier_curve();
+    drawCoords();
 }

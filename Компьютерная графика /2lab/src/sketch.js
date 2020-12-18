@@ -28,7 +28,6 @@ function drawPiramid (h, R, x, y, z) {
 		vertex(arr[i].x, arr[i].y, arr[i].z);
 		endShape();
 	}
-
 	beginShape();
 	for (let i = 0; i < n; i++) {
 		vertex(arr[i].x, arr[i].y, arr[i].z);
