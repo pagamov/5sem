@@ -61,7 +61,7 @@ function setup() {
 	background(200);
 }
 
-var bbb = [31, 90,16,97,80,28,61,66,60,15,88,41,79];
+// var bbb = [31, 90,16,97,80,28,61,66,60,15,88,41,79];
 
 function draw() {
 	background(200);

@@ -1,128 +1,113 @@
-let control_points = [];
-let make_new_point = false;
-let active_point = null;
-let cameraMode = null;
-let active_mode = null;
+var control_points = [];
+var res_dots = [];
 
-function keyTyped() {
-    if (key === 'd') {
-        active_mode = 'draw';
-    } else if (key === 'r') {
-        active_mode = 'remove';
-    } else if (key === 'm') {
-        active_mode = 'move';
-    }
+function setup_curve() {
+    //set point for curve
 
-    if (key === 'x') {
-        cameraMode = 'x';
-    } else if (key === 'y') {
-        cameraMode = 'y';
-    } else if (key === 'z') {
-        cameraMode = 'z';
-    } else if (key === 'n') {
-        cameraMode = null;
-        active_mode = null;
-    }
+    //heart
+    // control_points = [
+    //     {x:0,y:400,z:-300},
+    //     {x:-400,y:0,z:-200},
+    //     {x:-200,y:-400,z:-100},
+    //     {x:0,y:-200,z:0},
+    //     {x:200,y:-400,z:100},
+    //     {x:400,y:0,z:200},
+    //     {x:0,y:400,z:300}
+    // ];
+
+    //tube
+    // control_points = [
+    //     {x:-200,y:400,z:-300},
+    //     {x:-200,y:-200,z:-200},
+    //     {x:0,y:-400,z:-100},
+    //     {x:200,y:-200,z:0},
+    //     {x:400,y:0,z:100},
+    //     {x:600,y:0,z:200}
+    // ];
+
+    // demo
+    control_points = [
+        {x:-400,y:400,z:0},
+        {x:-200,y:-400,z:0},
+        {x:200,y:100,z:0},
+        {x:400,y:-200,z:0}
+    ];
 }
 
-function mousePressed() {
+function update_curve() {
+    //update pivet front and rear point for curve
+    if (control_points.length == 1) {
+        return;
+    }
+    res_dots = [];
+    var t = 0.3;
+    var b = -0.3;
+    var c = 0.7;
     for (var i = 0; i < control_points.length; i++) {
-        let distance = p5.Vector.dist(
-            createVector(mouseX, mouseY), createVector(control_points[i].x, control_points[i].y)
-        );
-        if (distance < 12) {
-            if (active_mode == 'draw') {
-                make_new_point = true;
-                active_point = control_points[i];
-                return 0;
-            } else if (active_mode == 'remove') {
-                control_points.splice(i, 1);
-                return 0;
-            } else if (active_mode == 'move') {
-                active_point = control_points[i];
-                return 0;
-            }
+        var curr = control_points[i];
+        // curr = current node
+        // next = next node
+        // prev = prev node
+        if (i == 0) {
+            var next = control_points[i + 1];
+            var p = createVector(curr.x, curr.y, curr.z);
+            var pn = createVector(next.x, next.y, next.z);
+            pn.sub(p);
+            control_points[i].d = p5.Vector.mult(pn, (1-t)*(1-b)*(1+c)/2);
+        } else if (i == control_points.length - 1) {
+            var prev = control_points[i - 1];
+            var p = createVector(curr.x, curr.y, curr.z);
+            var pp = createVector(prev.x, prev.y, prev.z);
+            p.sub(pp);
+            control_points[i].d = p5.Vector.mult(pn, (1-t)*(1+b)*(1+c)/2);
+        } else {
+            var next = control_points[i + 1];
+            var prev = control_points[i - 1];
+            var p = createVector(curr.x, curr.y, curr.z);
+            var pn = createVector(next.x, next.y, next.z);
+            var pp = createVector(prev.x, prev.y, prev.z);
+            pn.sub(p);
+            p.sub(pp);
+            pn.mult((1-t)*(1-b)*(1+c)/2);
+            p.mult((1-t)*(1+b)*(1+c)/2);
+            control_points[i].d = p5.Vector.add(p,pn);
+            // control_points[i].d = p5.Vector.mult(p5.Vector.sub(p, pp), (1-t)*(1+b)*(1+c)/2) + p5.Vector.mult(p5.Vector.sub(pn, p), (1-t)*(1-b)*(1+c)/2);
         }
     }
-    if (active_mode == 'draw') {
-        control_points.push({x: mouseX, y: mouseY, curve_point_back: null, curve_point_front: null});
-    }
-}
 
-function mouseReleased() {
-    if (make_new_point) {
-        make_new_point = false;
-        active_point = null;
-    }
-    if (active_mode == 'move') {
-        let v = createVector(mouseX - active_point.x, mouseY - active_point.y);
-        active_point.x = mouseX;
-        active_point.y = mouseY;
-        if (active_point.curve_point_back && active_point.curve_point_front) {
-            active_point.curve_point_back.x += v.x;
-            active_point.curve_point_back.y += v.y;
-            active_point.curve_point_front.x += v.x;
-            active_point.curve_point_front.y += v.y;
+    for (var i = 0; i < control_points.length - 1; i++) {
+        var a = control_points[i];
+        var b = control_points[i + 1];
+        for (var t = 0; t <= 1; t += 0.05) {
+            var p = createVector(a.x,a.y,a.z);
+            var pn = createVector(b.x,b.y,b.z);
+            var m = createVector(a.d.x,a.d.y,a.d.z);
+            var mn = createVector(b.d.x,b.d.y,b.d.z);
+
+            p.mult(2*pow(t,3) - 3*pow(t,2) + 1);
+            m.mult(pow(t,3) - 2 * pow(t,2) + t);
+            pn.mult(-2 * pow(t,3) + 3 * pow(t,2));
+            mn.mult(pow(t,3) - pow(t,2));
+
+            res_dots.push(p5.Vector.add(p5.Vector.add(p,m),p5.Vector.add(pn,mn)));
         }
-        active_point = null;
     }
-}
-
-function drawOval(x, y, z) {
-    stroke(210,120,10);
-    for (var i = 0; i < 360; i++) {
-        var x_1 = x + cos(i / 360 * 2 * PI) * document.getElementById('a').value;
-        var y_1 = y + sin(i / 360 * 2 * PI) * document.getElementById('b').value;
-
-        var x_2 = x + cos((i + 1) / 360 * 2 * PI) * document.getElementById('a').value;
-        var y_2 = y + sin((i + 1) / 360 * 2 * PI) * document.getElementById('b').value;
-
-        line(x_1, y_1, z, x_2, y_2, z);
-    }
-}
-
-function drawCoords() {
-    var x = -width / 2;
-    var y = -height / 2;
-    stroke(200,0,0);
-    line(-x,0,0,100,0,0);
-
-    stroke(0,200,0);
-    line(-x,0,0,0,100,0);
-
-    stroke(0,0,200);
-    line(-x,0,0,0,0,100);
 }
 
 
 function setup() {
-	createCanvas(600, 600, WEBGL);
-	background(204);
+	createCanvas(800, 800, WEBGL);
+	background(200);
+    setup_curve();
+    update_curve();
+    ambientLight(100);
+    ambientMaterial(255,69,0);
 }
 
 function draw() {
-	background(204);
-    if (cameraMode == 'x') {
-        camera(400, 0, 0, 0, 0, 0, 0, 1, 0);
-    } else if (cameraMode == 'y') {
-        camera(0, 100, 0, 0, 0, 0, 0, 1, 0);
-    } else if (cameraMode == 'z') {
-        camera(0, 0, 100, 0, 0, 0, 0, 1, 0);
-    } else {
-        orbitControl();
-    }
-    // if (active_mode == null) {
-    //     orbitControl();
-    // }
-
-    draw_control_points();
-    //
-    // drawOval(0,0,0);
-
-    // draw_text();
-    if (mouseIsPressed && make_new_point) {
-        draw_based_points(active_point);
-    }
-    draw_bezier_curve();
-    drawCoords();
+	background(200);
+    orbitControl();
+    draw_cardinal_spline();
+    draw_kinematic_plane(100);
+    // draw_control_points();
 }

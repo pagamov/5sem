@@ -26,6 +26,9 @@ function draw_based_points(point) {
 function draw_control_points() {
     strokeWeight(1);
     stroke(10);
+    if (control_points.length == 1) {
+        return;
+    }
     for (var i = 0; i < control_points.length; i++) {
         noFill();
         ellipse(control_points[i].x, control_points[i].y, 12);
@@ -55,118 +58,90 @@ function draw_control_points() {
     }
 }
 
-function draw_bezier_curve() {
-    const N = 100; // step
-    var res_dots = [];
-    for (var i = 0; i < control_points.length - 1; i++) {
-        var a = control_points[i];
-        var b = control_points[i + 1];
-
-        if (a.curve_point_front == null && b.curve_point_back == null) {
-            // no dots
-            res_dots.push({x: a.x, y: a.y})
-            res_dots.push({x: b.x, y: b.y})
-
-        } else if (a.curve_point_front == null && b.curve_point_back != null) {
-            // only 3 dots
-            var b_b = b.curve_point_back;
-
-            for (var j = 0; j <= N; j++) {
-                var a_v = createVector(a.x, a.y);
-                var b_v = createVector(b_b.x, b_b.y);
-                var v1 = createVector(b_b.x - a.x, b_b.y - a.y);
-                var v2 = createVector(b.x - b_b.x, b.y - b_b.y);
-
-                v1.mult(j / N);
-                a_v.add(v1);
-
-                v2.mult(j / N);
-                b_v.add(v2);
-
-                var r_v = createVector(a_v.x, a_v.y);
-                var v3 = createVector(b_v.x - a_v.x, b_v.y - a_v.y);
-
-                v3.mult(j / N);
-                r_v.add(v3);
-
-                res_dots.push({x: r_v.x, y: r_v.y});
-            }
-        } else if (a.curve_point_front != null && b.curve_point_back == null) {
-            // only 3 dots
-            var b_b = a.curve_point_front;
-
-            for (var j = 0; j <= N; j++) {
-                var a_v = createVector(a.x, a.y);
-                var b_v = createVector(b_b.x, b_b.y);
-                var v1 = createVector(b_b.x - a.x, b_b.y - a.y);
-                var v2 = createVector(b.x - b_b.x, b.y - b_b.y);
-
-                v1.mult(j / N);
-                a_v.add(v1);
-
-                v2.mult(j / N);
-                b_v.add(v2);
-
-                var r_v = createVector(a_v.x, a_v.y);
-                var v3 = createVector(b_v.x - a_v.x, b_v.y - a_v.y);
-
-                v3.mult(j / N);
-                r_v.add(v3);
-
-                res_dots.push({x: r_v.x, y: r_v.y});
-            }
-        } else {
-            // we have 4 dots
-            var a_f = a.curve_point_front;
-            var b_b = b.curve_point_back;
-
-            for (var j = 0; j <= N; j++) {
-                var a_v = createVector(a.x, a.y);
-                var a_f_v = createVector(a_f.x, a_f.y);
-                var b_b_v = createVector(b_b.x, b_b.y);
-
-                var v1 = createVector(a_f_v.x - a_v.x, a_f_v.y - a_v.y);
-                var v2 = createVector(b_b_v.x - a_f_v.x, b_b_v.y - a_f_v.y);
-                var v3 = createVector(b.x - b_b_v.x, b.y - b_b_v.y);
-
-                v1.mult(j / N);
-                a_v.add(v1);
-
-                v2.mult(j / N);
-                a_f_v.add(v2);
-
-                v3.mult(j / N);
-                b_b_v.add(v3);
-
-
-                var v4 = createVector(a_f_v.x - a_v.x, a_f_v.y - a_v.y);
-                var v5 = createVector(b_b_v.x - a_f_v.x, b_b_v.y - a_f_v.y);
-
-                v4.mult(j / N);
-                a_v.add(v4);
-
-                v5.mult(j / N);
-                a_f_v.add(v5);
-
-                var v6 = createVector(a_f_v.x - a_v.x, a_f_v.y - a_v.y);
-
-                v6.mult(j / N);
-                a_v.add(v6);
-
-                res_dots.push({x: a_v.x, y: a_v.y});
-            }
-        }
-    }
+function draw_cardinal_spline() {
     strokeWeight(4);
     stroke(0, 230, 10);
     for (var i = 0; i < res_dots.length - 1; i++) {
-        line(res_dots[i].x, res_dots[i].y, res_dots[i + 1].x, res_dots[i + 1].y)
+        line(res_dots[i].x, res_dots[i].y, res_dots[i].z, res_dots[i + 1].x, res_dots[i + 1].y, res_dots[i + 1].z);
     }
 }
 
-function draw_text() {
-    textSize(25);
-    stroke(10);
-    fill(10);
-    text(active_mode, 10, 25);
+function drawOval(x, y, z) {
+    stroke(210,120,10);
+    for (var i = 0; i < 360; i++) {
+        var x_1 = x + cos(i / 360 * 2 * PI) * document.getElementById('a').value;
+        var y_1 = y + sin(i / 360 * 2 * PI) * document.getElementById('b').value;
+
+        var x_2 = x + cos((i + 1) / 360 * 2 * PI) * document.getElementById('a').value;
+        var y_2 = y + sin((i + 1) / 360 * 2 * PI) * document.getElementById('b').value;
+
+        line(x_1, y_1, z, x_2, y_2, z);
+    }
+}
+
+function draw_kinematic_plane(percent) {
+    for (var i = 0; i < res_dots.length - 1; i++) {
+        // res_dots.length -
+
+        // stroke(0,69,200);
+        // strokeWeight(2);
+        // line(0,0,0,res_dots[i+1].x - res_dots[i].x,res_dots[i+1].y - res_dots[i].y,res_dots[i+1].z - res_dots[i].z);
+
+        push();
+        stroke(255,69,5);
+        strokeWeight(2);
+
+        var piv = createVector(res_dots[i+1].x - res_dots[i].x,res_dots[i+1].y - res_dots[i].y,res_dots[i+1].z - res_dots[i].z);
+        // var dx = piv.angleBetween(createVector(1,0,0));
+        // var dy = piv.angleBetween(createVector(0,1,0));
+        // var dz = piv.angleBetween(createVector(0,0,1));
+
+        var a = res_dots[i];
+        var b = res_dots[i+1];
+
+        // translate(p5.Vector.div(p5.Vector.add(res_dots[i], res_dots[i+1]), 2));
+
+        // rotateX(dx);
+        // rotateY(dy);
+        // rotateZ(dz);
+
+        var step = 30;
+
+        for (var fi = 0; fi <= 360; fi += step) {
+
+            var x_1 = cos(fi / 360 * 2 * PI) * document.getElementById('a').value;
+            var z_1 = sin(fi / 360 * 2 * PI) * document.getElementById('b').value;
+
+            var x_2 = cos((fi + step) / 360 * 2 * PI) * document.getElementById('a').value;
+            var z_2 = sin((fi + step) / 360 * 2 * PI) * document.getElementById('b').value;
+
+            beginShape();
+            vertex(x_1 + a.x, a.y, z_1 + a.z);
+            vertex(x_2 + a.x, a.y, z_2 + a.z);
+
+            vertex(x_2 + a.x + piv.x, a.y + piv.y, z_2 + a.z + piv.z);
+            vertex(x_1 + a.x + piv.x, a.y + piv.y, z_1 + a.z + piv.z);
+            endShape(CLOSE);
+
+            // line(x_1, 0, z_1, x_2, 0, z_2);
+
+            // console.log(x_1);
+        }
+        beginShape();
+        for (var fi = 0; fi <= 360; fi += step) {
+            var x_1 = cos(fi / 360 * 2 * PI) * document.getElementById('a').value;
+            var z_1 = sin(fi / 360 * 2 * PI) * document.getElementById('b').value;
+            vertex(x_1 + a.x, a.y, z_1 + a.z);
+        }
+        endShape(CLOSE);
+
+        beginShape();
+        for (var fi = 0; fi <= 360; fi += step) {
+            var x_1 = cos(fi / 360 * 2 * PI) * document.getElementById('a').value;
+            var z_1 = sin(fi / 360 * 2 * PI) * document.getElementById('b').value;
+            vertex(x_1 + a.x + piv.x, a.y + piv.y, z_1 + a.z + piv.z);
+        }
+        endShape(CLOSE);
+        pop();
+    }
 }
