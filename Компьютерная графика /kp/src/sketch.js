@@ -4,7 +4,7 @@ var res_dots = [];
 function setup_curve() {
     //set point for curve
 
-    //heart
+    // //heart
     // control_points = [
     //     {x:0,y:400,z:-300},
     //     {x:-400,y:0,z:-200},
@@ -109,5 +109,4 @@ function draw() {
     orbitControl();
     draw_cardinal_spline();
     draw_kinematic_plane(100);
-    // draw_control_points();
 }

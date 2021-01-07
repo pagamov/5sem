@@ -96,8 +96,7 @@ function draw_kinematic_plane(percent) {
         // var dy = piv.angleBetween(createVector(0,1,0));
         // var dz = piv.angleBetween(createVector(0,0,1));
 
-        var a = res_dots[i];
-        var b = res_dots[i+1];
+
 
         // translate(p5.Vector.div(p5.Vector.add(res_dots[i], res_dots[i+1]), 2));
 
@@ -105,27 +104,20 @@ function draw_kinematic_plane(percent) {
         // rotateY(dy);
         // rotateZ(dz);
 
+        var a = res_dots[i];
+        var b = res_dots[i+1];
         var step = 30;
-
         for (var fi = 0; fi <= 360; fi += step) {
-
             var x_1 = cos(fi / 360 * 2 * PI) * document.getElementById('a').value;
             var z_1 = sin(fi / 360 * 2 * PI) * document.getElementById('b').value;
-
             var x_2 = cos((fi + step) / 360 * 2 * PI) * document.getElementById('a').value;
             var z_2 = sin((fi + step) / 360 * 2 * PI) * document.getElementById('b').value;
-
             beginShape();
             vertex(x_1 + a.x, a.y, z_1 + a.z);
             vertex(x_2 + a.x, a.y, z_2 + a.z);
-
             vertex(x_2 + a.x + piv.x, a.y + piv.y, z_2 + a.z + piv.z);
             vertex(x_1 + a.x + piv.x, a.y + piv.y, z_1 + a.z + piv.z);
             endShape(CLOSE);
-
-            // line(x_1, 0, z_1, x_2, 0, z_2);
-
-            // console.log(x_1);
         }
         beginShape();
         for (var fi = 0; fi <= 360; fi += step) {
